@@ -11,6 +11,9 @@ import mplcyberpunk
 print("before")
 model_dict= pickle.load(open(r"pickle/best_mse_dict.pkl","rb"))
 app = Flask(__name__)
+server=app.server
+
+
 VALID_ID_MSG = "Error: Given ID is incorrect, Please enter a valid ID"
 NOT_ENOUGHT_MSG ="Note: Given ID does not enough quarter data to forecast results"
 MEDICARE="Medicare"

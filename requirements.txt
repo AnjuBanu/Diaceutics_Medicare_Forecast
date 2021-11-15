@@ -12,9 +12,8 @@ pandas==1.2.4
 seaborn==0.11.2
 plotly==5.3.1
 mplcyberpunk==0.3.0
-fbprophet==0.7.1
 pmdarima==1.8.3
 statsmodels==0.13.0
 chart-studio==1.1.0
-cmdstanpy==0.9.5
+cmdstanpy==0.9.68
 pystan==2.19.1.1
