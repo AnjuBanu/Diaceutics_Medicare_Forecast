@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import chart_studio.plotly as py
 import mplcyberpunk
-from darts import TimeSeries
+# from darts import TimeSeries
+
 print("before")
-model_dict= pickle.load(open(r"model/pickle/best_mse_dict.pkl","rb"))
+model_dict= pickle.load(open(r"pickle/best_mse_dict.pkl","rb"))
 app = Flask(__name__)
 VALID_ID_MSG = "Error: Given ID is incorrect, Please enter a valid ID"
 NOT_ENOUGHT_MSG ="Note: Given ID does not enough quarter data to forecast results"
@@ -24,7 +25,7 @@ forecast_model=None
 
 def getForecastDatesLength(file):
     rand_id = 56227
-    data_copy = pd.read_csv(f"model/data/{file}.csv",header=0,index_col=0)
+    data_copy = pd.read_csv(f"data/{file}.csv",header=0,index_col=0)
     medi = data_copy[(data_copy.id == rand_id) & (data_copy.type == 'M')]
     comm = data_copy[(data_copy.id == rand_id) & (data_copy.type == 'C')]
     global forecast_dates
@@ -47,13 +48,13 @@ def getIDSourceType(id,data):
     types = COMMERCIAL if 'M' not in types else MEDICARE if 'C' not in types else BOTH
     return src,types
 
-def convertTsToDf(ts):
-    if (ts != None ):
-        df = TimeSeries.pd_dataframe(ts)
-        df['volume'] = np.round(df['volume']).astype('int')
-        df[df['volume'] < 0] = 1
-        return df
-    return ts
+# def convertTsToDf(ts):
+#     if (ts != None ):
+#         df = TimeSeries.pd_dataframe(ts)
+#         df['volume'] = np.round(df['volume']).astype('int')
+#         df[df['volume'] < 0] = 1
+#         return df
+#     return ts
 
 def getData(id_model,model_type):
     best_model = id_model['best_model']
@@ -110,9 +111,9 @@ def predictNbeatsI(id_model,src,types,model_type):
                            past_covariates=com_data,
                            verbose=False,
                            n_jobs=-1)
-    med_data = convertTsToDf(med_data)
-    com_data = convertTsToDf(com_data)
-    predict = convertTsToDf(predict)
+    # med_data = convertTsToDf(med_data)
+    # com_data = convertTsToDf(com_data)
+    # predict = convertTsToDf(predict)
     return med_data,com_data,predict                                                                                                  
 
 
@@ -124,9 +125,9 @@ def predictNbeatsS(id_model,src,types,model_type):
                            past_covariates=com_data,
                            verbose=False,
                            n_jobs=-1)
-    med_data = convertTsToDf(med_data)
-    com_data = convertTsToDf(com_data)
-    predict = convertTsToDf(predict)
+    # med_data = convertTsToDf(med_data)
+    # com_data = convertTsToDf(com_data)
+    # predict = convertTsToDf(predict)
     return med_data,com_data,predict
 
 
@@ -138,9 +139,9 @@ def predictRNN(id_model,src,types,model_type):
                            future_covariates =com_data,
                            verbose=False,
                            n_jobs=-1)
-    med_data = convertTsToDf(med_data)
-    com_data = convertTsToDf(com_data)
-    predict = convertTsToDf(predict)
+    # med_data = convertTsToDf(med_data)
+    # com_data = convertTsToDf(com_data)
+    # predict = convertTsToDf(predict)
     return med_data,com_data,predict
     
     
@@ -167,6 +168,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
     fig= go.Figure()
     dummy = pd.concat([med_data[-1:],pred_result])
     com_plot=True
+    print("Plotting Medicare")  
     fig.add_trace(go.Scatter(x=med_data.index,
                     y=med_data['volume'],
                     name='Medicare',
@@ -186,6 +188,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
                       name='Commercial',
                       marker=dict(color='#08f6fd',size=8))) 
         
+    print("Plotting lines1")    
     fig.add_trace(go.Scatter(x=dummy.index,
                   y=dummy['volume'],
                   mode='lines',
@@ -193,7 +196,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
                   hovertemplate=None,
                   hoverinfo='skip',
                   line=dict(color='#F5D300',dash='dash'))) 
-        
+    print("Plotting lines2")  
     fig.add_trace(go.Scatter(x=pred_result.index,
                   y=pred_result['volume'],
                   mode='lines+markers',
@@ -210,11 +213,12 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
     fig.update_xaxes(showgrid=True, gridwidth=0.01, gridcolor='#435266')
     fig.update_yaxes(showgrid=True, gridwidth=0.01, gridcolor='#435266')
     py.plot(fig, filename="forecast_med",default=False)
+    print("done with plotting")
 
 
         
 def predictResult(id,file):
-    data = pd.read_csv(f"model/data/{file}.csv",header=0,index_col=0)
+    data = pd.read_csv(f"data/{file}.csv",header=0,index_col=0)
     src,types = getIDSourceType(id,data)
     print(src)
     print(types)
@@ -227,7 +231,7 @@ def predictResult(id,file):
 
     
 def invalidID(ID,file):
-    data_copy = pd.read_csv(f"model/data/{file}.csv",header=0,index_col=0)
+    data_copy = pd.read_csv(f"data/{file}.csv",header=0,index_col=0)
     id_list = np.unique(data_copy['id'])
     if ID not in id_list:
         return True
