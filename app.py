@@ -8,8 +8,8 @@ import chart_studio.plotly as py
 import mplcyberpunk
 # from darts import TimeSeries
 
-
-model_dict= pickle.load(open(r"model/pickle/best_mse_dict.pkl","rb"))
+print("before")
+model_dict= pickle.load(open(r"pickle/best_mse_dict.pkl","rb"))
 app = Flask(__name__)
 VALID_ID_MSG = "Error: Given ID is incorrect, Please enter a valid ID"
 NOT_ENOUGHT_MSG ="Note: Given ID does not enough quarter data to forecast results"
@@ -23,10 +23,9 @@ forecast_dates = None
 forecast_len = 0
 forecast_model=None
 
-
 def getForecastDatesLength(file):
     rand_id = 56227
-    data_copy = pd.read_csv(f"model/data/{file}.csv",header=0,index_col=0)
+    data_copy = pd.read_csv(f"data/{file}.csv",header=0,index_col=0)
     medi = data_copy[(data_copy.id == rand_id) & (data_copy.type == 'M')]
     comm = data_copy[(data_copy.id == rand_id) & (data_copy.type == 'C')]
     global forecast_dates
@@ -174,13 +173,12 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
                     name='Medicare',
                     mode='lines+markers',
                     marker=dict(color='#bb2c12',size=8)))
-    print(forecast_model)
-    if (forecast_model in ['NBEATSI','NBEATSS','RNN']) and (com_data.empty):
+
+    if (forecast_model in ['NBEATSI','NBEATSS','RNN']) and (com_data==None):
         com_plot = False
     
     if (forecast_model not in ['NBEATSI','NBEATSS','RNN']) and (com_data.empty):
         com_plot = False
-        
     print(com_plot)
     if (com_plot):
         fig.add_trace(go.Scatter(x=com_data.index,
@@ -217,7 +215,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
 
         
 def predictResult(id,file):
-    data = pd.read_csv(f"model/data/{file}.csv",header=0,index_col=0)
+    data = pd.read_csv(f"data/{file}.csv",header=0,index_col=0)
     src,types = getIDSourceType(id,data)
     print(src)
     print(types)
@@ -230,7 +228,7 @@ def predictResult(id,file):
 
     
 def invalidID(ID,file):
-    data_copy = pd.read_csv(f"model/data/{file}.csv",header=0,index_col=0)
+    data_copy = pd.read_csv(f"data/{file}.csv",header=0,index_col=0)
     id_list = np.unique(data_copy['id'])
     if ID not in id_list:
         return True
