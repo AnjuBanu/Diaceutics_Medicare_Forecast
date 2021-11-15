@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import chart_studio.plotly as py
 import mplcyberpunk
-from darts import TimeSeries
-print("before")
+# from darts import TimeSeries
+
+
 model_dict= pickle.load(open(r"model/pickle/best_mse_dict.pkl","rb"))
 app = Flask(__name__)
 VALID_ID_MSG = "Error: Given ID is incorrect, Please enter a valid ID"
@@ -21,6 +22,7 @@ FORECAST='Forecast'
 forecast_dates = None
 forecast_len = 0
 forecast_model=None
+
 
 def getForecastDatesLength(file):
     rand_id = 56227
@@ -47,13 +49,13 @@ def getIDSourceType(id,data):
     types = COMMERCIAL if 'M' not in types else MEDICARE if 'C' not in types else BOTH
     return src,types
 
-def convertTsToDf(ts):
-    if (ts != None ):
-        df = TimeSeries.pd_dataframe(ts)
-        df['volume'] = np.round(df['volume']).astype('int')
-        df[df['volume'] < 0] = 1
-        return df
-    return ts
+# def convertTsToDf(ts):
+#     if (ts != None ):
+#         df = TimeSeries.pd_dataframe(ts)
+#         df['volume'] = np.round(df['volume']).astype('int')
+#         df[df['volume'] < 0] = 1
+#         return df
+#     return ts
 
 def getData(id_model,model_type):
     best_model = id_model['best_model']
@@ -110,9 +112,9 @@ def predictNbeatsI(id_model,src,types,model_type):
                            past_covariates=com_data,
                            verbose=False,
                            n_jobs=-1)
-    med_data = convertTsToDf(med_data)
-    com_data = convertTsToDf(com_data)
-    predict = convertTsToDf(predict)
+    # med_data = convertTsToDf(med_data)
+    # com_data = convertTsToDf(com_data)
+    # predict = convertTsToDf(predict)
     return med_data,com_data,predict                                                                                                  
 
 
@@ -124,9 +126,9 @@ def predictNbeatsS(id_model,src,types,model_type):
                            past_covariates=com_data,
                            verbose=False,
                            n_jobs=-1)
-    med_data = convertTsToDf(med_data)
-    com_data = convertTsToDf(com_data)
-    predict = convertTsToDf(predict)
+    # med_data = convertTsToDf(med_data)
+    # com_data = convertTsToDf(com_data)
+    # predict = convertTsToDf(predict)
     return med_data,com_data,predict
 
 
@@ -138,9 +140,9 @@ def predictRNN(id_model,src,types,model_type):
                            future_covariates =com_data,
                            verbose=False,
                            n_jobs=-1)
-    med_data = convertTsToDf(med_data)
-    com_data = convertTsToDf(com_data)
-    predict = convertTsToDf(predict)
+    # med_data = convertTsToDf(med_data)
+    # com_data = convertTsToDf(com_data)
+    # predict = convertTsToDf(predict)
     return med_data,com_data,predict
     
     
@@ -172,12 +174,13 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
                     name='Medicare',
                     mode='lines+markers',
                     marker=dict(color='#bb2c12',size=8)))
-
-    if (forecast_model in ['NBEATSI','NBEATSS','RNN']) and (com_data==None):
+    print(forecast_model)
+    if (forecast_model in ['NBEATSI','NBEATSS','RNN']) and (com_data.empty):
         com_plot = False
     
     if (forecast_model not in ['NBEATSI','NBEATSS','RNN']) and (com_data.empty):
         com_plot = False
+        
     print(com_plot)
     if (com_plot):
         fig.add_trace(go.Scatter(x=com_data.index,
