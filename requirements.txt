@@ -17,4 +17,4 @@ pmdarima==1.8.3
 statsmodels==0.13.0
 chart-studio==1.1.0
 cmdstanpy==0.9.5
-
+pystan==2.19.1.1
