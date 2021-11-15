@@ -1,0 +1,43 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<img src="{{ url_for('static', filename='banner.png') }}" width="1520" height="250">
+
+<style>
+.borderexample {
+ border-style:solid;
+ border-color:#ECECEC;
+ border-radius: 20px;
+ border-width: medium;
+ background-color: #ECECEC;
+ height: 50%;
+ width: 50%;
+}
+</style>
+</head>
+
+<body>
+</br></br>
+<center>
+
+<h1 style="font-family:Tahoma">Prediction of Physician and Laboratory Diagnostic Testing Volumes</h1>
+
+	<div class="borderexample">
+	</br></br>
+		{% if result %}
+            <h3><b><p style="color:red;">{{result}}</p></b><h3>
+        {% endif %}
+		<form action="{{ url_for('predict')}}" method = "POST">
+			<h3 style="font-family:verdana">Enter the Lab/Physician ID   <input name="ID" type="text" /></h3>
+			<h3><input type="submit" value="Predict" style="width:100px" /></h3>
+		</form>
+	</div>
+</center>
+
+</body>
+</html>
+
+
