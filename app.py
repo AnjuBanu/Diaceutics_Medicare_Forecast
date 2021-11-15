@@ -168,6 +168,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
     fig= go.Figure()
     dummy = pd.concat([med_data[-1:],pred_result])
     com_plot=True
+    print("Plotting Medicare")  
     fig.add_trace(go.Scatter(x=med_data.index,
                     y=med_data['volume'],
                     name='Medicare',
@@ -187,6 +188,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
                       name='Commercial',
                       marker=dict(color='#08f6fd',size=8))) 
         
+    print("Plotting lines1")    
     fig.add_trace(go.Scatter(x=dummy.index,
                   y=dummy['volume'],
                   mode='lines',
@@ -194,7 +196,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
                   hovertemplate=None,
                   hoverinfo='skip',
                   line=dict(color='#F5D300',dash='dash'))) 
-        
+    print("Plotting lines2")  
     fig.add_trace(go.Scatter(x=pred_result.index,
                   y=pred_result['volume'],
                   mode='lines+markers',
@@ -211,6 +213,7 @@ def plotResult(med_data,com_data,src,types,pred_result,id):
     fig.update_xaxes(showgrid=True, gridwidth=0.01, gridcolor='#435266')
     fig.update_yaxes(showgrid=True, gridwidth=0.01, gridcolor='#435266')
     py.plot(fig, filename="forecast_med",default=False)
+    print("done with plotting")
 
 
         
